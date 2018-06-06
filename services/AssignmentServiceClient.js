@@ -1,6 +1,7 @@
 import 'es6-symbol/implement';
 
 const ASSIGNMENT_URL = "http://10.0.0.183:8080/api/lesson/LID/assignment";
+const GET_ASSIGNMENT_URL = "http://10.0.0.183:8080/api/assignment/";
 
 let _singleton = Symbol();
 class AssignmentServiceClient{
@@ -28,7 +29,16 @@ class AssignmentServiceClient{
         'content-type':'application/json'
       },
       body:JSON.stringify(assignment)
-    })
+    }).then(response=>(
+        response.json()
+      ))
+  }
+
+  findAssignmentById(assignmentId){
+    return fetch(GET_ASSIGNMENT_URL + assignmentId)
+      .then(response=> {
+        return response.json()
+      })
   }
 }
 

@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import {View, ScrollView, Alert} from 'react-native'
 import {Button, ListItem, Text} from 'react-native-elements'
-import AssignmentEditor from '../elements/AssignmentEditor'
 import AssignmentServiceClient from '../services/AssignmentServiceClient'
 
 class WidgetList extends Component {
@@ -17,8 +16,7 @@ class WidgetList extends Component {
   }
 
   componentDidMount() {
-    const {navigation} = this.props;
-    const lessonId = navigation.getParam("lessonId");
+    const lessonId = this.props.navigation.getParam("lessonId",1);
     this.setState({lessonId: lessonId});
     this.assignmentService.findAllAssignmentsForLesson(lessonId)
       .then(assignments => this.setState({assignments: assignments}))
@@ -34,7 +32,6 @@ class WidgetList extends Component {
       widgetType: "Assignment"
     };
     return this.assignmentService.addAssignment(this.state.lessonId, newAssignment)
-      .then((response) => (response.json()))
       .then(assignment => {
           this.setState({
             assignments:
@@ -47,20 +44,26 @@ class WidgetList extends Component {
       )
   }
 
+  handleOnNavigateBack = () => {
+    this.assignmentService.findAllAssignmentsForLesson(this.state.lessonId)
+      .then(assignments => (
+      this.setState({assignments: assignments})
+    ))
+  };
+
   render() {
     return (
-
       <ScrollView style={{padding: 15}}>
-
-
         <Text h4 style={{paddingLeft: 15}}>
           Assignments
         </Text>
-
         {this.state.assignments.map((assignment, index) => (
           <ListItem
-            // onPress={() => this.props.navigation
-            //   .navigate("AssignmentEditor", {assignment: assignment})}
+            onPress={() => this.props.navigation
+              .navigate("AssignmentEditor", {
+                assignmentId: assignment.id
+                ,onNavigateBack: this.handleOnNavigateBack
+              })}
             key={index}
             subtitle={assignment.description}
             title={assignment.title}/>
@@ -70,7 +73,6 @@ class WidgetList extends Component {
           <Button title="Add Assignment"
                   onPress={() => this.addNewAssignment()}/>
         </View>
-
       </ScrollView>
     )
   }
