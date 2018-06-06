@@ -19,6 +19,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "es6-symbol": "^3.1.1",
     "expo": "^27.0.1",
     "fb-watchman": "^2.0.0",
     "react": "16.3.1",

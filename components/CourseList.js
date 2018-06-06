@@ -1,21 +1,24 @@
 import React, {Component} from 'react'
 import {View, Alert} from 'react-native'
 import {Text, ListItem} from 'react-native-elements'
+import CourseServiceClient from '../services/CourseServiceClient'
 
 class CourseList extends Component {
   static navigationOptions = {title: 'Courses'}
   constructor(props) {
     super(props)
-    fetch('http://10.0.0.183:8080/api/course')
-      .then(response => (response.json()))
-      .then(courses => {
-        this.setState({courses: courses})
-      })
-      .catch(error => (error));
     this.state = {
       courses: []
     }
+    this.courseService = CourseServiceClient.instance;
   }
+
+  componentDidMount() {
+    this.courseService.findAllCourses()
+      .then(courses => this.setState({courses: courses}))
+      .catch(error => (error));
+  }
+
   render() {
     return(
       <View style={{padding: 15}}>

@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {View, Alert} from 'react-native'
 import {Text, ListItem} from 'react-native-elements'
+import LessonServiceClient from '../services/LessonServiceClient'
 
 class LessonList extends Component {
   static navigationOptions = {title: 'Lessons'}
@@ -11,14 +12,22 @@ class LessonList extends Component {
       courseId: 1,
       moduleId: 1
     }
+    this.lessonService = LessonServiceClient.instance;
   }
+
   componentDidMount() {
-    const {navigation} = this.props;
-    const courseId = navigation.getParam("courseId")
-    const moduleId = navigation.getParam("moduleId")
-    fetch("http://10.0.0.183:8080/api/course/"+courseId+"/module/"+moduleId+"/lesson")
-      .then(response => (response.json()))
-      .then(lessons => this.setState({lessons}))
+    const courseId = this.props.navigation.getParam("courseId", 1);
+    this.moduleService.findAllModulesForCourse(courseId)
+      .then(modules => this.setState({modules: modules}))
+      .catch(error => (error));
+  }
+
+
+  componentDidMount() {
+    const courseId = this.props.navigation.getParam("courseId")
+    const moduleId = this.props.navigation.getParam("moduleId")
+    this.lessonService.findAllLessonsForModule(courseId,moduleId)
+      .then(lessons => this.setState({lessons: lessons}))
       .catch(error => (error));
   }
   render() {
