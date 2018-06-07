@@ -19,24 +19,32 @@ class ExamEditor extends React.Component {
     };
     this.questionService = QuestionServiceClient.instance;
     this.addNewQuestion = this.addNewQuestion.bind(this);
+    this.deleteQuestion=this.deleteQuestion.bind(this);
+  }
+
+  getAllQuestions() {
+    this.questionService.findAllQuestionsByExam(this.state.examId)
+      .then(questions => (this.setState({questions: questions})))
   }
 
   componentDidMount() {
     const exam = this.props.navigation.getParam("exam", {});
     this.setState({examId: exam.id, exam: exam});
-    this.questionService.findAllQuestionsByExam(exam.id)
-      .then(questions => (this.setState({questions: questions})))
+    this.getAllQuestions();
   }
 
   addNewQuestion(questionType) {
     this.questionService.addNewQuestion(questionType, this.state.examId)
-      .then(() => (this.questionService.findAllQuestionsByExam(this.state.examId)))
-      .then(questions => (this.setState({questions: questions})))
+      .then(() => this.getAllQuestions())
+  }
+
+  deleteQuestion(questionId){
+    this.questionService.deleteQuestion(questionId);
+    this.getAllQuestions();
   }
 
   handleOnNavigateBack = () => {
-    this.questionService.findAllQuestionsByExam(this.state.examId)
-      .then(questions => (this.setState({questions: questions})))
+    this.getAllQuestions();
   };
 
   render() {
@@ -48,18 +56,18 @@ class ExamEditor extends React.Component {
 
           return (
             <View key={question.id}>
-              {/*{question.questionType === 'FIB' &&*/}
-              {/*<ListItem title={question.title} subtitle={question.subtitle}*/}
-                        {/*key={question.id} leftIcon={{name: 'code'}}*/}
-                        {/*onPress={() => this.props.navigation.navigate("FillInTheBlanksWidget", {*/}
-                          {/*question: question, onNavigateBack: this.handleOnNavigateBack*/}
-                        {/*})}/>}*/}
-              {/*{question.questionType === 'TOF' &&*/}
-              {/*<ListItem title={question.title} subtitle={question.subtitle}*/}
-                        {/*key={question.id} leftIcon={{name: 'check'}}*/}
-                        {/*onPress={() => this.props.navigation.navigate("TrueOrFalseWidget", {*/}
-                          {/*question: question, onNavigateBack: this.handleOnNavigateBack*/}
-                        {/*})}/>}*/}
+              {question.questionType === 'FIB' &&
+              <ListItem title={question.title} subtitle={question.subtitle}
+                        key={question.id} leftIcon={{name: 'code'}}
+                        onPress={() => this.props.navigation.navigate("FillInTheBlanksWidget", {
+                          question: question, onNavigateBack: this.handleOnNavigateBack
+                        })}/>}
+              {question.questionType === 'TOF' &&
+              <ListItem title={question.title} subtitle={question.subtitle}
+                        key={question.id} leftIcon={{name: 'check'}}
+                        onPress={() => this.props.navigation.navigate("TrueOrFalseWidget", {
+                          question: question, onNavigateBack: this.handleOnNavigateBack
+                        })}/>}
               {question.questionType === 'ESS' &&
               <ListItem title={question.title} subtitle={question.subtitle}
                         key={question.id} leftIcon={{name: 'subject'}}
@@ -67,12 +75,12 @@ class ExamEditor extends React.Component {
                           question: question, onNavigateBack: this.handleOnNavigateBack
                         })}
               />}
-              {/*{question.questionType === 'MCQ' &&*/}
-              {/*<ListItem title={question.title} subtitle={question.subtitle}*/}
-                        {/*key={question.id} leftIcon={{name: 'list'}}*/}
-                        {/*onPress={() => this.props.navigation.navigate("MultipleChoiceWidget", {*/}
-                          {/*question: question, onNavigateBack: this.handleOnNavigateBack*/}
-                        {/*})}/>}*/}
+              {question.questionType === 'MCQ' &&
+              <ListItem title={question.title} subtitle={question.subtitle}
+                        key={question.id} leftIcon={{name: 'list'}}
+                        onPress={() => this.props.navigation.navigate("MultipleChoiceWidget", {
+                          question: question, onNavigateBack: this.handleOnNavigateBack
+                        })}/>}
             </View>
           )
         })}

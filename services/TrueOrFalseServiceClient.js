@@ -1,27 +1,29 @@
 import 'es6-symbol/implement';
 
-const QUESTION_URL = "http://10.0.0.183:8080/api/question/QID/essay";
-const EXAM_URL = "http://10.0.0.183:8080/api/exam/EID/essay";
+const QUESTION_URL = "http://10.0.0.183:8080/api/question/QID/trueorfalse";
+const EXAM_URL = "http://10.0.0.183:8080/api/exam/EID/trueorfalse";
 
 let _singleton=Symbol();
-class EssayServiceClient{
+
+class TrueOrFalseServiceClient{
   constructor(singletonToken) {
     if (_singleton !== singletonToken)
       throw new Error('Cannot instantiate directly.');
   }
   static get instance() {
     if(!this[_singleton])
-      this[_singleton] = new EssayServiceClient(_singleton);
+      this[_singleton] = new TrueOrFalseServiceClient(_singleton);
     return this[_singleton]
   }
 
-  addQuestion(examId){
+  addNewQuestion(examId){
     let newQuestion={
-      title: 'New Essay Question',
-      description: 'New Essay Description',
-      points: 100,
-      subtitle: 'New Essay Subtitle',
-      questionType:'ESS'
+      title:'New True or False Question',
+      description:'New True or False Description',
+      points:100,
+      subtitle:'New True or False Subtitle',
+      isTrue:true,
+      questionType:'TOF'
     };
 
     return fetch(EXAM_URL.replace('EID',examId),{
@@ -33,15 +35,16 @@ class EssayServiceClient{
     })
   }
 
-  updateQuestion(questionId, modifiedQuestion){
+  updateQuestion(questionId,question){
     return fetch(QUESTION_URL.replace('QID',questionId), {
       method: "put",
       headers: {
         'content-type': 'application/json'
       },
-      body: JSON.stringify(modifiedQuestion)
+      body: JSON.stringify(question)
     })
   }
+
 }
 
-export default EssayServiceClient;
+export default TrueOrFalseServiceClient;
