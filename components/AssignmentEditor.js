@@ -1,6 +1,7 @@
 import React from 'react'
-import {ScrollView, View} from 'react-native'
+import {ScrollView, View, TextInput} from 'react-native'
 import {Text, Button, FormLabel, FormInput, FormValidationMessage} from 'react-native-elements'
+import Hyperlink from 'react-native-hyperlink'
 import AssignmentServiceClient from '../services/AssignmentServiceClient'
 
 class AssignmentEditor extends React.Component {
@@ -12,10 +13,12 @@ class AssignmentEditor extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: "",
+      text: "",
+      widgetType: "",
       title: "",
       description: "",
       points: "",
-      assignment: "",
       preview: false
     };
 
@@ -28,10 +31,12 @@ class AssignmentEditor extends React.Component {
     this.assignmentService.findAssignmentById(assignmentId)
       .then(assignment => (
         this.setState({
-          assignment: assignment,
+          id: assignment.id,
+          text: assignment.text,
+          widgetType: assignment.widgetType,
           title: assignment.title,
           description: assignment.description,
-          points: assignment.points
+          points: assignment.points.toString()
         })
       ))
   }
@@ -41,12 +46,14 @@ class AssignmentEditor extends React.Component {
   }
 
   updateAssignment() {
-    let updateAssignment = {
+    let updatedAssignment = {
       title: this.state.title,
+      text: this.state.text,
+      widgetType: this.state.widgetType,
       description: this.state.description,
       points: this.state.points
     };
-    this.assignmentService.updateAssignment(this.state.assignment.id, updateAssignment)
+    this.assignmentService.updateAssignment(this.state.id, updatedAssignment)
       .then(() => this.props.navigation.state.params.onNavigateBack())
       .then(() => this.props.navigation.goBack())
   }
@@ -59,8 +66,11 @@ class AssignmentEditor extends React.Component {
         <View>
           <FormLabel>Title</FormLabel>
           <FormInput onChangeText={
-            text => (this.updateForm({title: text}))
-          } value={this.state.assignment.title}/>
+            text => {
+              this.updateForm({title: text})
+              this.updateForm()
+            }
+          } value={this.state.title}/>
 
           {this.state.title === "" &&
           <FormValidationMessage>
@@ -70,7 +80,7 @@ class AssignmentEditor extends React.Component {
           <FormLabel>Description</FormLabel>
           <FormInput onChangeText={
             text => (this.updateForm({description: text}))
-          } value={this.state.assignment.description}/>
+          } value={this.state.description}/>
 
           {this.state.description === "" &&
           <FormValidationMessage>
@@ -78,32 +88,89 @@ class AssignmentEditor extends React.Component {
           </FormValidationMessage>}
 
           <FormLabel>Points</FormLabel>
-          <FormInput onChangeText={
-            text => (this.updateForm({points: text}))
-          } value={this.state.assignment.points}/>
+
+          <FormInput type='numeric'
+                     keyboardType='numeric'
+                     onChangeText={
+                       text => (this.updateForm({points: text}))
+                     } value={this.state.points}/>
 
           {this.state.points === "" &&
           <FormValidationMessage>
             Points is required
           </FormValidationMessage>}
 
-          <Button style={{padding: 15}}
-                  backgroundColor="green"
-                  color="white"
-                  title="Save"/>
+          <View style={{paddingBottom: 15, paddingTop: 15}}>
+            <Button backgroundColor="green"
+                    color="white"
+                    title="Save"
+                    onPress={() => (this.updateAssignment())}/>
+          </View>
           <Button backgroundColor="red"
                   color="white"
-                  title="Cancel"/>
+                  title="Cancel"
+                  onPress={() => this.props.navigation.navigate('WidgetList')}/>
+
+          <View style={{paddingBottom: 15, paddingTop: 15}}>
+            <Button backgroundColor="black"
+                    color="white"
+                    title="Show Just Preview"
+                    onPress={() => (this.updateForm({preview: true}))}/>
+          </View>
 
         </View>}
 
         {this.state.preview &&
-        <View>
-          <Text h3>Preview</Text>
-          <Text h2>{this.state.title}</Text>
-          <Text>{this.state.description}</Text>
-          <Text>{this.state.assignment}</Text>
+        <View style={{paddingBottom: 15, paddingTop: 15}}>
+          <Button backgroundColor="black"
+                  color="white"
+                  title="Show Form"
+                  onPress={() => (this.updateForm({preview: false}))}/>
         </View>}
+        {!this.state.preview &&
+        <Text h3>Preview</Text>}
+
+        <View style={{flexDirection: 'row'}}>
+          <View style={{flex: 4}}>
+            <Text h4>{this.state.title}</Text>
+          </View>
+          <View style={{flex: 2}}>
+            <Text h4 style={{alignSelf: 'flex-end'}}>{this.state.points}pts</Text>
+          </View>
+        </View>
+
+        <View style={{paddingTop: 15}}>
+          <Text>{this.state.description}</Text>
+        </View>
+
+        <View style={{paddingTop: 15}}>
+          <Text h5>Essay Answer</Text>
+          <TextInput multiline={true}
+                     numberOfLines={5}/>
+        </View>
+
+        <View style={{paddingTop: 15}}>
+          <Text h5>Upload a file</Text>
+          <Button backgroundColor="green"
+                  color="white"
+                  title="Choose File"/>
+        </View>
+
+        <View style={{paddingTop: 15, paddingBottom: 15}}>
+          <Text h5>Submit a link</Text>
+          <FormInput/>
+        </View>
+
+        <Button backgroundColor="red"
+                color="white"
+                title="Cancel"/>
+
+        <View style={{paddingBottom: 30, paddingTop: 15}}>
+          <Button backgroundColor="blue"
+                  color="white"
+                  title="Submit"/>
+        </View>
+
 
       </ScrollView>
     )

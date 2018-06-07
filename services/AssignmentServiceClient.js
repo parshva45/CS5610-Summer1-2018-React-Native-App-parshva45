@@ -54,6 +54,16 @@ class AssignmentServiceClient{
     }).then(response => (response))
   }
 
+  updateAssignment(assignmentId, assignment) {
+    return fetch(GET_ASSIGNMENT_URL+ "/" +assignmentId, {
+      method: "put",
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify(assignment)
+    })
+  }
+
 }
 
 export default AssignmentServiceClient;

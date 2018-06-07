@@ -1,9 +1,9 @@
 import 'es6-symbol/implement';
 
-import FillInTheBlankServiceClient from "./FillInTheBlankServiceClient";
-import TrueOrFalseServiceClient from "./TrueOrFalseServiceClient";
+// import FillInTheBlankServiceClient from "./FillInTheBlankServiceClient";
+// import TrueOrFalseServiceClient from "./TrueOrFalseServiceClient";
 import EssayServiceClient from "./EssayServiceClient";
-import MultipleChoiceServiceClient from "./MultipleChoiceServiceClient";
+// import MultipleChoiceServiceClient from "./MultipleChoiceServiceClient";
 
 const QUESTION_URL = "http://10.0.0.183:8080/api/exam/EID/question";
 
@@ -13,10 +13,10 @@ class QuestionServiceClient{
     if (_singleton !== singletonToken)
       throw new Error('Cannot instantiate directly.');
 
-    this.fillInTheBlankService = FillInTheBlankServiceClient.instance;
-    this.trueFalseService = TrueOrFalseServiceClient.instance;
+    // this.fillInTheBlankService = FillInTheBlankServiceClient.instance;
+    // this.trueFalseService = TrueOrFalseServiceClient.instance;
     this.essayService = EssayServiceClient.instance;
-    this.mulitpleChoiceService = MultipleChoiceServiceClient.instance;
+    // this.mulitpleChoiceService = MultipleChoiceServiceClient.instance;
 
   }
   static get instance() {
@@ -26,18 +26,18 @@ class QuestionServiceClient{
   }
 
   addQuestion(questionType,examId){
-    if(questionType === 'FIB'){
-      return this.fillInTheBlankService.addQuestion(examId)
-    }
-    else if(questionType === 'TOF'){
-      return this.trueFalseService.addQuestion(examId)
-    }
-    else if(questionType === 'ESS'){
+    // if(questionType === 'FIB'){
+    //   return this.fillInTheBlankService.addQuestion(examId)
+    // }
+    // else if(questionType === 'TOF'){
+    //   return this.trueFalseService.addQuestion(examId)
+    // }
+    // else if(questionType === 'ESS'){
       return this.essayService.addQuestion(examId)
-    }
-    else if(questionType === 'MCQ'){
-      return this.mulitpleChoiceService.addQuestion(examId)
-    }
+    // }
+    // else if(questionType === 'MCQ'){
+    //   return this.mulitpleChoiceService.addQuestion(examId)
+    // }
   }
 
   findAllQuestionsByExam(examId){

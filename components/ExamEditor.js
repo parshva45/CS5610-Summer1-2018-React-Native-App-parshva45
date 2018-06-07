@@ -48,18 +48,18 @@ class ExamEditor extends React.Component {
 
           return (
             <View key={question.id}>
-              {question.questionType === 'FIB' &&
-              <ListItem title={question.title} subtitle={question.subtitle}
-                        key={question.id} leftIcon={{name: 'code'}}
-                        onPress={() => this.props.navigation.navigate("FillInTheBlanksWidget", {
-                          question: question, onNavigateBack: this.handleOnNavigateBack
-                        })}/>}
-              {question.questionType === 'TOF' &&
-              <ListItem title={question.title} subtitle={question.subtitle}
-                        key={question.id} leftIcon={{name: 'check'}}
-                        onPress={() => this.props.navigation.navigate("TrueOrFalseWidget", {
-                          question: question, onNavigateBack: this.handleOnNavigateBack
-                        })}/>}
+              {/*{question.questionType === 'FIB' &&*/}
+              {/*<ListItem title={question.title} subtitle={question.subtitle}*/}
+                        {/*key={question.id} leftIcon={{name: 'code'}}*/}
+                        {/*onPress={() => this.props.navigation.navigate("FillInTheBlanksWidget", {*/}
+                          {/*question: question, onNavigateBack: this.handleOnNavigateBack*/}
+                        {/*})}/>}*/}
+              {/*{question.questionType === 'TOF' &&*/}
+              {/*<ListItem title={question.title} subtitle={question.subtitle}*/}
+                        {/*key={question.id} leftIcon={{name: 'check'}}*/}
+                        {/*onPress={() => this.props.navigation.navigate("TrueOrFalseWidget", {*/}
+                          {/*question: question, onNavigateBack: this.handleOnNavigateBack*/}
+                        {/*})}/>}*/}
               {question.questionType === 'ESS' &&
               <ListItem title={question.title} subtitle={question.subtitle}
                         key={question.id} leftIcon={{name: 'subject'}}
@@ -67,12 +67,12 @@ class ExamEditor extends React.Component {
                           question: question, onNavigateBack: this.handleOnNavigateBack
                         })}
               />}
-              {question.questionType === 'MCQ' &&
-              <ListItem title={question.title} subtitle={question.subtitle}
-                        key={question.id} leftIcon={{name: 'list'}}
-                        onPress={() => this.props.navigation.navigate("MultipleChoiceWidget", {
-                          question: question, onNavigateBack: this.handleOnNavigateBack
-                        })}/>}
+              {/*{question.questionType === 'MCQ' &&*/}
+              {/*<ListItem title={question.title} subtitle={question.subtitle}*/}
+                        {/*key={question.id} leftIcon={{name: 'list'}}*/}
+                        {/*onPress={() => this.props.navigation.navigate("MultipleChoiceWidget", {*/}
+                          {/*question: question, onNavigateBack: this.handleOnNavigateBack*/}
+                        {/*})}/>}*/}
             </View>
           )
         })}
