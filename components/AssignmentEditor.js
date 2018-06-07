@@ -1,7 +1,6 @@
 import React from 'react'
 import {ScrollView, View} from 'react-native'
-import {Text, Button} from 'react-native-elements'
-import {FormLabel, FormInput, FormValidationMessage} from 'react-native-elements'
+import {Text, Button, FormLabel, FormInput, FormValidationMessage} from 'react-native-elements'
 import AssignmentServiceClient from '../services/AssignmentServiceClient'
 
 class AssignmentEditor extends React.Component {

@@ -22,7 +22,7 @@ class AssignmentServiceClient{
       ))
   }
 
-  addAssignment(lessonId){
+  addNewAssignment(lessonId){
     let newAssignment = {
       title: "New Assignment Title",
       description: "New Assignment Description",
@@ -47,6 +47,13 @@ class AssignmentServiceClient{
         return response.json()
       })
   }
+
+  deleteAssignment(assignmentId){
+    fetch(GET_ASSIGNMENT_URL + "/" + assignmentId, {
+      method:'delete'
+    }).then(response => (response))
+  }
+
 }
 
 export default AssignmentServiceClient;

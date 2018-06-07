@@ -22,13 +22,18 @@ class ExamServiceClient{
       ))
   }
 
-  addExam(lessonId,exam){
+  addNewExam(lessonId){
+    let newExam={
+      title:"New Exam Title",
+      text:"New Exam Text",
+      widgetType:"Exam"
+    };
     return fetch(EXAM_URL.replace("LID",lessonId),{
       method:"post",
       headers:{
         'content-type':'application/json'
       },
-      body:JSON.stringify(exam)
+      body:JSON.stringify(newExam)
     }).then(response => (
       response.json()
     ))
@@ -44,7 +49,7 @@ class ExamServiceClient{
   deleteExam(examId){
     fetch(GET_EXAM_URL + "/" + examId, {
       method:'delete'
-    })
+    }).then(response => (response))
   }
 }
 
