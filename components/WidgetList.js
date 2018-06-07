@@ -24,14 +24,7 @@ class WidgetList extends Component {
   }
 
   addNewAssignment() {
-    let newAssignment = {
-      title: "New Assignment Title",
-      description: "New Assignment Description",
-      points: 100,
-      text: "New Assignment Text",
-      widgetType: "Assignment"
-    };
-    return this.assignmentService.addAssignment(this.state.lessonId, newAssignment)
+    return this.assignmentService.addAssignment(this.state.lessonId)
       .then(assignment => {
           this.setState({
             assignments:
