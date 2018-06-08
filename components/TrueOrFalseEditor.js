@@ -1,230 +1,175 @@
 import React from 'react';
 import {View, ScrollView, TextInput, Alert} from 'react-native';
-import {Text,FormValidationMessage,FormLabel,FormInput,Button,CheckBox} from 'react-native-elements';
+import {Text, FormValidationMessage, FormLabel, FormInput, Button, CheckBox} from 'react-native-elements';
 import TrueOrFalseServiceClient from "../services/TrueOrFalseServiceClient";
 import RadioForm from 'react-native-simple-radio-button';
 import Icon from "react-native-elements/src/icons/Icon";
 
 
-class TrueOrFalseWidget extends React.Component{
+class TrueOrFalseEditor extends React.Component {
 
-  static navigationOptions={
-    title:"True Or False Editor",
-    headerStyle: { backgroundColor: '#363636' },
-    headerTitleStyle: { color: '#fff' },
-    headerTintColor: 'white'
-  }
+  static navigationOptions = {
+    title: "True Or False Editor"
+  };
 
-  constructor(props){
+  constructor(props) {
     super(props);
-    this.state={
-      question:'',
-      title:"",
-      description:"",
-      points:"",
-      subtitle:"",
-      isTrue:'1',
-      previewMode:true,
-      radio_props : [
-        {label: 'True', value: 1 },
-        {label: 'False', value: 0 }
+    this.state = {
+      question: "",
+      title: "",
+      description: "",
+      points: "",
+      subtitle: "",
+      isTrue: true,
+      preview: false,
+      radio_props: [
+        {label: 'True', value: true},
+        {label: 'False', value: false}
       ]
-    }
+    };
 
-    this.updateQuestion=this.updateQuestion.bind(this);
-    this.trueOrFalseService=TrueOrFalseServiceClient.instance;
+    this.updateQuestion = this.updateQuestion.bind(this);
+    this.trueOrFalseService = TrueOrFalseServiceClient.instance;
   }
 
-  componentDidMount(){
-    let question=this.props.navigation.getParam('question',1);
-    this.setState({question:question})
+  componentDidMount() {
+    let question = this.props.navigation.getParam('question', 1);
+    this.setState({question: question});
     this.setState({
-      title:question.title,
-      description:question.description,
-      points:question.points,
-      subtitle:question.subtitle,
-      isTrue:question.isTrue
-    })
+      title: question.title,
+      description: question.description,
+      points: question.points.toString(),
+      subtitle: question.subtitle,
+      isTrue: question.isTrue
+    });
   }
 
-  formUpdate(newState){
+  updateForm(newState) {
     this.setState(newState);
   }
 
-  updateQuestion(){
+  updateQuestion() {
+    let question = {
+      title: this.state.title,
+      description: this.state.description,
+      points: this.state.points,
+      subtitle: this.state.subtitle,
+      questionType: 'TOF',
+      isTrue: this.state.isTrue
+    };
 
-    let question={
-      title:this.state.title,
-      description:this.state.description,
-      points:this.state.points,
-      subtitle:this.state.subtitle,
-      questionType:'TF',
-      isTrue:this.state.isTrue
-    }
-
-    this.trueOrFalseService.updateQuestion(this.state.question.id,question)
-      .then(Alert.alert("True/False Question updated successfully"))
-      .then(()=>this.props.navigation.state.params.onNavigateBack())
-      .then(()=>this.props.navigation.goBack())
-
+    this.trueOrFalseService.updateQuestion(this.state.question.id, question)
+      .then(() => this.props.navigation.state.params.onNavigateBack())
+      .then(() => this.props.navigation.goBack())
   }
 
-  render(){
-    let no;
-    return(
-      <ScrollView style={{padding: 15}} >
-        {this.state.previewMode &&<ScrollView>
+  render() {
+    return (
+      <ScrollView style={{padding: 15}}>
+        {!this.state.preview &&
+        <ScrollView>
 
-          <View style={{padding: 15, marginBottom: 0}}>
-            <View style={{flex: 1, backgroundColor: 'grey', padding: 11, marginBottom: 2}}>
-              <TextInput editable={false} style={{color: "#fff"}}>Title</TextInput>
-              <View style={{flex: 1, flexDirection: 'row'}}>
-                <View style={{flex: 6}}>
-                  <TextInput style={{
-                    height: 40,
-                    borderColor: 'black',
-                    borderWidth: 1,
-                    backgroundColor: 'white'
-                  }} onChangeText={(text) => {
-                    this.formUpdate({title: text})
-                  }} value={this.state.question.title}/>
-                </View>
-                {this.state.title === "" &&
-                <FormValidationMessage>Title is required</FormValidationMessage>}
-              </View>
-            </View>
+          <FormLabel>Title</FormLabel>
+          <FormInput onChangeText={
+            text => {
+              this.updateForm({title: text})
+            }
+          } value={this.state.title}/>
+          {this.state.title === "" &&
+          <FormValidationMessage>Title is required</FormValidationMessage>}
+
+          <FormLabel>Subtitle</FormLabel>
+          <FormInput onChangeText={
+            text => {
+              this.updateForm({subtitle: text})
+            }
+          } value={this.state.subtitle}/>
+          {this.state.subtitle === "" &&
+          <FormValidationMessage>Subtitle is required</FormValidationMessage>}
+
+          <FormLabel>Description</FormLabel>
+          <FormInput onChangeText={
+            text => {
+              this.updateForm({description: text})
+            }
+          } value={this.state.description}/>
+          {this.state.description === "" &&
+          <FormValidationMessage>Description is required</FormValidationMessage>}
+
+          <FormLabel>Points</FormLabel>
+          <FormInput type='numeric'
+                     keyboardType='numeric'
+                     onChangeText={
+                       text => (this.updateForm({points: text}))
+                     } value={this.state.points}/>
+          {this.state.points === "" &&
+          <FormValidationMessage>Points is required</FormValidationMessage>}
+
+          <CheckBox onPress={() => this.updateForm({isTrue: !this.state.isTrue})}
+                    checked={this.state.isTrue} title='The answer is true'/>
+
+          <View style={{paddingBottom: 15, paddingTop: 15}}>
+            <Button backgroundColor="green"
+                    color="white"
+                    title="Submit True Or False Question"
+                    onPress={() => (this.updateQuestion())}/>
           </View>
 
-          <View style={{padding: 15, marginBottom: 0}}>
-            <View style={{flex: 1, backgroundColor: 'grey', padding: 11, marginBottom: 2}}>
-              <TextInput editable={false} style={{color: "#fff"}}>Subtitle</TextInput>
-              <View style={{flex: 1, flexDirection: 'row'}}>
-                <View style={{flex: 6}}>
-                  <TextInput style={{
-                    height: 40,
-                    borderColor: 'black',
-                    borderWidth: 1,
-                    backgroundColor: 'white'
-                  }} onChangeText={(text) => {
-                    this.formUpdate({subtitle: text})
-                  }} value={this.state.question.subtitle}/>
-                </View>
-                {this.state.subtitle === "" &&
-                <FormValidationMessage>Subtitle is required</FormValidationMessage>}
-              </View>
-            </View>
+          <Button backgroundColor="red"
+                  color="white"
+                  title="Cancel"
+                  onPress={() => this.props.navigation.goBack()}/>
+
+          <View style={{paddingBottom: 15, paddingTop: 15}}>
+            <Button backgroundColor="black"
+                    color="white"
+                    title="Show Just Preview"
+                    onPress={() => (this.updateForm({preview: true}))}/>
           </View>
 
-          <View style={{padding: 15, marginBottom: 0}}>
-            <View style={{flex: 1, backgroundColor: 'grey', padding: 11, marginBottom: 2}}>
-              <TextInput editable={false} style={{color: "#fff"}}>Description</TextInput>
-              <View style={{flex: 1, flexDirection: 'row'}}>
-                <View style={{flex: 6}}>
-                  <TextInput style={{
-                    height: 40,
-                    borderColor: 'black',
-                    borderWidth: 1,
-                    backgroundColor: 'white'
-                  }} onChangeText={(text) => {
-                    this.formUpdate({description: text})
-                  }} value={this.state.question.description}/>
-                </View>
-                {this.state.description === "" &&
-                <FormValidationMessage>Description is required</FormValidationMessage>}
-              </View>
-            </View>
-          </View>
-
-          {no = this.state.question.points}
-          { no=''+no}
-
-          <View style={{padding: 15, marginBottom: 0}}>
-            <View style={{flex: 1, backgroundColor: 'grey', padding: 11, marginBottom: 2}}>
-              <TextInput editable={false} style={{color: "#fff"}}>Points</TextInput>
-              <View style={{flex: 1, flexDirection: 'row'}}>
-                <View style={{flex: 6}}>
-                  <TextInput style={{
-                    height: 40,
-                    borderColor: 'black',
-                    borderWidth: 1,
-                    backgroundColor: 'white'
-                  }} onChangeText={(text) => {
-                    this.formUpdate({points: text})
-                  }} value={no}/>
-                </View>
-                {this.state.points === "" &&
-                <FormValidationMessage>Points are required</FormValidationMessage>}
-              </View>
-            </View>
-          </View>
-
-          <CheckBox onPress={() => this.formUpdate(this.state.isTrue==='1'? {isTrue:'0'} : {isTrue:'1'} )}
-                    checked={this.state.isTrue=='1'} title='The answer is true'/>
-
-          <View style={{flex: 1, flexDirection: 'row'}}>
-            <View style={{flex: 2}}>
-              <Icon name={'save'} size={40} color="green"
-                    onPress={() => this.updateQuestion()}
-                    type='entypo'/>
-            </View>
-            <View style={{flex: 2}}>
-              <Icon name={'cancel'} size={40} color="red"
-                    onPress={() => this.props.navigation.goBack()}
-                    type='materialicon'/>
-            </View>
-            <View style={{flex: 2}}>
-              <Icon name={'slideshow'} size={40} color="blue"
-                    onPress={() => {
-                      this.setState({previewMode: !this.state.previewMode})
-                    }}
-                    type='materialicon'/>
-            </View>
-
-          </View>
         </ScrollView>}
 
+        {this.state.preview &&
+        <View style={{paddingBottom: 15, paddingTop: 15}}>
+          <Button backgroundColor="black"
+                  color="white"
+                  title="Show Form"
+                  onPress={() => (this.updateForm({preview: false}))}/>
+        </View>}
 
+        {!this.state.preview &&
+        <Text h2>Preview</Text>}
 
-        {!this.state.previewMode &&
-        <View style={{padding:5}}>
-          <View style={{flex: 1, flexDirection: 'row',backgroundColor:'grey',padding:10,marginBottom:5}}>
-            <View style={{flex: 4}}>
-              <Text h4 style={{color:"#fff"}}>{this.state.title}</Text>
-            </View>
-            <View style={{flex: 2}}>
-              <Text h4 style={{color:"#fff"}}>Points - {this.state.points}</Text>
-            </View>
+        <View style={{flexDirection: 'row'}}>
+          <View style={{flex: 4}}>
+            <Text h3>{this.state.title}</Text>
           </View>
-          <View style={{backgroundColor:'grey',padding:10,marginBottom:5}}>
-            <Text h4 style={{color:"#fff"}}>Description:</Text>
-            <Text style={{color:"#fff"}}>{this.state.description}</Text>
-          </View>
-
-          <RadioForm
-            radio_props={this.state.radio_props}
-            initial={0}
-            onPress={(value) => {this.setState({value:value})}}
-          />
-
-          <View style={{flex: 1, flexDirection: 'row'}}>
-            <View style={{flex: 2}}>
-              <Icon name={'check'} size={40} color="green"
-                    type='entypo'/>
-            </View>
-            <View style={{flex: 2}}>
-              <Icon name={'cancel'} size={40} color="red"
-                    type='materialicon'/>
-            </View>
-            <View style={{flex: 2}}>
-              <Icon name={'back'} size={40} color="blue"
-                    onPress={() => {
-                      this.setState({previewMode: !this.state.previewMode})}}
-                    type='entypo'/>
-            </View>
+          <View style={{flex: 2}}>
+            <Text h3 style={{alignSelf: 'flex-end'}}>{this.state.points}pts</Text>
           </View>
         </View>
-        }
 
+        <View style={{paddingTop: 15}}>
+          <Text h4>{this.state.subtitle}</Text>
+        </View>
+
+        <View style={{paddingTop: 15}}>
+          <Text>{this.state.description}</Text>
+        </View>
+
+        <RadioForm
+          radio_props={this.state.radio_props}
+          initial={true}
+          onPress={(value) => {
+            this.setState({value: value})
+          }}
+        />
+
+        <View style={{paddingBottom: 30, paddingTop: 15}}>
+          <Button backgroundColor="blue"
+                  color="white"
+                  title="Submit True Or False Answer"/>
+        </View>
 
       </ScrollView>
     )
@@ -233,4 +178,4 @@ class TrueOrFalseWidget extends React.Component{
 
 }
 
-export default TrueOrFalseWidget;
+export default TrueOrFalseEditor;
