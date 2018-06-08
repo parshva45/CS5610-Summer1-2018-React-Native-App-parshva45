@@ -1,8 +1,7 @@
 import React from 'react';
-import {Alert, View, ScrollView, TextInput} from 'react-native';
+import {View, ScrollView, TextInput} from 'react-native';
 import {Text, FormInput, FormLabel, FormValidationMessage, Button} from 'react-native-elements';
 import FillInTheBlankServiceClient from "../services/FillInTheBlankServiceClient";
-import Icon from "react-native-elements/src/icons/Icon";
 
 class FillInTheBlankEditor extends React.Component {
 

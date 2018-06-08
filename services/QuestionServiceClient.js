@@ -25,18 +25,18 @@ class QuestionServiceClient{
     return this[_singleton]
   }
 
-  addQuestion(questionType,examId){
+  addNewQuestion(questionType,examId){
     if(questionType === 'FIB'){
-      return this.fillInTheBlankService.addQuestion(examId)
+      return this.fillInTheBlankService.addNewQuestion(examId)
     }
     else if(questionType === 'TOF'){
-      return this.trueFalseService.addQuestion(examId)
+      return this.trueFalseService.addNewQuestion(examId)
     }
     else if(questionType === 'ESS'){
-      return this.essayService.addQuestion(examId)
+      return this.essayService.addNewQuestion(examId)
     }
     else if(questionType === 'MCQ'){
-      return this.mulitpleChoiceService.addQuestion(examId)
+      return this.mulitpleChoiceService.addNewQuestion(examId)
     }
   }
 

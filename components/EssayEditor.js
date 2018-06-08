@@ -92,9 +92,7 @@ class EssayEditor extends React.Component {
                        text => (this.updateForm({points: text}))
                      } value={this.state.points}/>
           {this.state.points === "" &&
-          <FormValidationMessage>
-            Points is required
-          </FormValidationMessage>}
+          <FormValidationMessage>Points is required</FormValidationMessage>}
 
           <View style={{paddingBottom: 15, paddingTop: 15}}>
             <Button backgroundColor="green"
@@ -126,15 +124,19 @@ class EssayEditor extends React.Component {
         </View>}
 
         {!this.state.preview &&
-        <Text h3>Preview</Text>}
+        <Text h2>Preview</Text>}
 
         <View style={{flexDirection: 'row'}}>
           <View style={{flex: 4}}>
-            <Text h4>{this.state.title}</Text>
+            <Text h3>{this.state.title}</Text>
           </View>
           <View style={{flex: 2}}>
-            <Text h4 style={{alignSelf: 'flex-end'}}>{this.state.points}pts</Text>
+            <Text h3 style={{alignSelf: 'flex-end'}}>{this.state.points}pts</Text>
           </View>
+        </View>
+
+        <View style={{paddingTop: 15}}>
+          <Text h4>{this.state.subtitle}</Text>
         </View>
 
         <View style={{paddingTop: 15}}>

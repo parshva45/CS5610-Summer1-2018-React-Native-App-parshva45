@@ -13,17 +13,18 @@ class ExamEditor extends React.Component {
     super(props);
     this.state = {
       examId: '',
-      questionType: '',
-      questions: [],
-      exam: ''
+      exam: '',
+      questionType: 'ESS',
+      questions: []
     };
     this.questionService = QuestionServiceClient.instance;
     this.addNewQuestion = this.addNewQuestion.bind(this);
-    this.deleteQuestion=this.deleteQuestion.bind(this);
+    this.deleteQuestion = this.deleteQuestion.bind(this);
   }
 
   getAllQuestions() {
-    this.questionService.findAllQuestionsByExam(this.state.examId)
+    const examId = this.props.navigation.getParam("exam").id;
+    this.questionService.findAllQuestionsByExam(examId)
       .then(questions => (this.setState({questions: questions})))
   }
 
@@ -38,7 +39,7 @@ class ExamEditor extends React.Component {
       .then(() => this.getAllQuestions())
   }
 
-  deleteQuestion(questionId){
+  deleteQuestion(questionId) {
     this.questionService.deleteQuestion(questionId);
     this.getAllQuestions();
   }
@@ -52,38 +53,52 @@ class ExamEditor extends React.Component {
       <ScrollView style={{padding: 15}}>
         <Text h3>{this.state.exam.title}</Text>
         <Text h4>Questions</Text>
-        {this.state.questions.map((question) => {
 
+        {this.state.questions.map((question) => {
           return (
             <View key={question.id}>
+
               {question.questionType === 'FIB' &&
-              <ListItem title={question.title} subtitle={question.subtitle}
-                        key={question.id} leftIcon={{name: 'code'}}
-                        onPress={() => this.props.navigation.navigate("FillInTheBlanksWidget", {
-                          question: question, onNavigateBack: this.handleOnNavigateBack
-                        })}/>}
+              <View>
+                <ListItem title={question.title} subtitle={question.subtitle}
+                          key={question.id} leftIcon={{name: 'code'}}
+                          onPress={() => this.props.navigation.navigate("FillInTheBlankEditor", {
+                            question: question, onNavigateBack: this.handleOnNavigateBack
+                          })}/>
+              </View>}
+
               {question.questionType === 'TOF' &&
-              <ListItem title={question.title} subtitle={question.subtitle}
-                        key={question.id} leftIcon={{name: 'check'}}
-                        onPress={() => this.props.navigation.navigate("TrueOrFalseWidget", {
-                          question: question, onNavigateBack: this.handleOnNavigateBack
-                        })}/>}
+              <View>
+                <ListItem title={question.title} subtitle={question.subtitle}
+                          key={question.id} leftIcon={{name: 'check'}}
+                          onPress={() => this.props.navigation.navigate("TrueOrFalseEditor", {
+                            question: question, onNavigateBack: this.handleOnNavigateBack
+                          })}/>
+              </View>}
+
               {question.questionType === 'ESS' &&
-              <ListItem title={question.title} subtitle={question.subtitle}
-                        key={question.id} leftIcon={{name: 'subject'}}
-                        onPress={() => this.props.navigation.navigate("EssayWidget", {
-                          question: question, onNavigateBack: this.handleOnNavigateBack
-                        })}
-              />}
+              <View>
+                <ListItem title={question.title} subtitle={question.subtitle}
+                          key={question.id} leftIcon={{name: 'subject'}}
+                          onPress={() => this.props.navigation.navigate("EssayEditor", {
+                            question: question, onNavigateBack: this.handleOnNavigateBack
+                          })}
+                />
+              </View>}
+
               {question.questionType === 'MCQ' &&
-              <ListItem title={question.title} subtitle={question.subtitle}
-                        key={question.id} leftIcon={{name: 'list'}}
-                        onPress={() => this.props.navigation.navigate("MultipleChoiceWidget", {
-                          question: question, onNavigateBack: this.handleOnNavigateBack
-                        })}/>}
+              <View>
+                <ListItem title={question.title} subtitle={question.subtitle}
+                          key={question.id} leftIcon={{name: 'list'}}
+                          onPress={() => this.props.navigation.navigate("MultipleChoiceEditor", {
+                            question: question, onNavigateBack: this.handleOnNavigateBack
+                          })}/>
+              </View>}
             </View>
           )
         })}
+
+        <Text h4 style={{paddingTop: 15}}>Add New Question</Text>
 
         <Picker style={{padding: 15}}
                 onValueChange={(questionType) => {
@@ -94,11 +109,13 @@ class ExamEditor extends React.Component {
           <Picker.Item value="ESS" label="Essay"/>
           <Picker.Item value="MCQ" label="Multiple choice"/>
         </Picker>
-        <Button style={{padding: 15}}
-                title="Add Question"
-                onPress={() => {
-                  this.addNewQuestion(this.state.questionType)
-                }}/>
+        <View style={{padding: 15}}>
+          <Button title="Add Question"
+                  onPress={() => {
+                    this.addNewQuestion(this.state.questionType)
+                  }}/>
+        </View>
+        <Text h4 style={{paddingBottom: 15}}></Text>
       </ScrollView>
     )
   }

@@ -1,7 +1,6 @@
 import React from 'react'
 import {ScrollView, View, TextInput} from 'react-native'
 import {Text, Button, FormLabel, FormInput, FormValidationMessage} from 'react-native-elements'
-import Hyperlink from 'react-native-hyperlink'
 import AssignmentServiceClient from '../services/AssignmentServiceClient'
 
 class AssignmentEditor extends React.Component {
@@ -14,8 +13,6 @@ class AssignmentEditor extends React.Component {
     super(props);
     this.state = {
       id: "",
-      text: "",
-      widgetType: "",
       title: "",
       description: "",
       points: "",
@@ -32,8 +29,6 @@ class AssignmentEditor extends React.Component {
       .then(assignment => (
         this.setState({
           id: assignment.id,
-          text: assignment.text,
-          widgetType: assignment.widgetType,
           title: assignment.title,
           description: assignment.description,
           points: assignment.points.toString()
@@ -48,8 +43,8 @@ class AssignmentEditor extends React.Component {
   updateAssignment() {
     let updatedAssignment = {
       title: this.state.title,
-      text: this.state.text,
-      widgetType: this.state.widgetType,
+      text: this.state.title,
+      widgetType: "Assignment",
       description: this.state.description,
       points: this.state.points
     };
@@ -68,10 +63,8 @@ class AssignmentEditor extends React.Component {
           <FormInput onChangeText={
             text => {
               this.updateForm({title: text})
-              this.updateForm()
             }
           } value={this.state.title}/>
-
           {this.state.title === "" &&
           <FormValidationMessage>
             Title is required

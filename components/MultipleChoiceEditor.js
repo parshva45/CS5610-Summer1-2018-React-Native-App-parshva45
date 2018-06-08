@@ -60,8 +60,6 @@ class MultipleChoiceEditor extends React.Component {
       if (this.state.options[i] !== title)
         str[count++] = this.state.options[i];
     this.setState({options: str})
-    console.warn(this.state.options)
-    console.warn(this.state.correctOption)
   }
 
   updateQuestion() {

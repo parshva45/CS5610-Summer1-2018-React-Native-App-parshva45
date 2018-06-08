@@ -15,7 +15,7 @@ class EssayServiceClient{
     return this[_singleton]
   }
 
-  addQuestion(examId){
+  addNewQuestion(examId){
     let newQuestion={
       title: 'New Essay Question',
       description: 'New Essay Description',

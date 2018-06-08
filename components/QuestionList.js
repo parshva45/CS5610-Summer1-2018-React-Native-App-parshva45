@@ -3,9 +3,9 @@ import {View, Alert} from 'react-native'
 import {Text, ListItem} from 'react-native-elements'
 
 class QuestionList extends Component {
-  static navigationOptions = {title: 'Questions'}
+  static navigationOptions = {title: 'Questions'};
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       questions: [],
       examId: 1
@@ -13,7 +13,7 @@ class QuestionList extends Component {
   }
   componentDidMount() {
     const {navigation} = this.props;
-    const examId = navigation.getParam("examId")
+    const examId = navigation.getParam("examId");
     fetch("http://10.0.0.183:8080/api/exam/"+examId+"/question")
       .then(response => (response.json()))
       .then(questions => this.setState({questions}))

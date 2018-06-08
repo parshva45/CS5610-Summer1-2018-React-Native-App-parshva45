@@ -1,7 +1,7 @@
 import 'es6-symbol/implement';
 
-const QUESTION_URL = "http://10.0.0.183:8080/api/question/QID/trueorfalse";
-const EXAM_URL = "http://10.0.0.183:8080/api/exam/EID/trueorfalse";
+const QUESTION_URL = "http://10.0.0.183:8080/api/question/QID/truefalse";
+const EXAM_URL = "http://10.0.0.183:8080/api/exam/EID/truefalse";
 
 let _singleton=Symbol();
 
