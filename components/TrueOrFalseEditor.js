@@ -1,9 +1,8 @@
 import React from 'react';
-import {View, ScrollView, TextInput, Alert} from 'react-native';
+import {View, ScrollView} from 'react-native';
 import {Text, FormValidationMessage, FormLabel, FormInput, Button, CheckBox} from 'react-native-elements';
 import TrueOrFalseServiceClient from "../services/TrueOrFalseServiceClient";
 import RadioForm from 'react-native-simple-radio-button';
-import Icon from "react-native-elements/src/icons/Icon";
 
 
 class TrueOrFalseEditor extends React.Component {
@@ -75,6 +74,7 @@ class TrueOrFalseEditor extends React.Component {
               this.updateForm({title: text})
             }
           } value={this.state.title}/>
+
           {this.state.title === "" &&
           <FormValidationMessage>Title is required</FormValidationMessage>}
 
@@ -159,7 +159,7 @@ class TrueOrFalseEditor extends React.Component {
 
         <RadioForm
           radio_props={this.state.radio_props}
-          initial={true}
+          initial={false}
           onPress={(value) => {
             this.setState({value: value})
           }}
@@ -170,12 +170,9 @@ class TrueOrFalseEditor extends React.Component {
                   color="white"
                   title="Submit True Or False Answer"/>
         </View>
-
       </ScrollView>
     )
   }
-
-
 }
 
 export default TrueOrFalseEditor;
