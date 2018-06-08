@@ -1,296 +1,237 @@
 import React from 'react';
-import {View, ScrollView, Alert,TextInput} from 'react-native';
-import {Text,FormInput,FormValidationMessage,FormLabel,Button,CheckBox} from 'react-native-elements';
+import {View, ScrollView} from 'react-native';
+import {Text, FormInput, FormValidationMessage, FormLabel, Button, CheckBox} from 'react-native-elements';
 import MultipleChoiceServiceClient from "../services/MultipleChoiceServiceClient";
 import Icon from "react-native-elements/src/icons/Icon";
 
+class MultipleChoiceEditor extends React.Component {
 
-class MultipleChoiceWidget extends React.Component{
+  static navigationOptions = {
+    title: "Multiple Choice Editor"
+  };
 
-  static navigationOptions={
-    title:"MCQ Editor",
-    headerStyle: { backgroundColor: '#363636' },
-    headerTitleStyle: { color: '#fff' },
-    headerTintColor: 'white'
-  }
-
-  constructor(props){
+  constructor(props) {
     super(props);
-    this.state={
-      title:"",
-      description:"",
-      points:"",
-      subtitle:"",
-      question:'',
-      correctOption:'',
-      options:[],
-      previewMode:true,
-      newOption:'',
-      demo:''
-    }
-    this.updateQuestion=this.updateQuestion.bind(this);
-    this.addOption=this.addOption.bind(this);
-    this.deleteOption=this.deleteOption.bind(this);
-    this.mcqService=MultipleChoiceServiceClient.instance;
+    this.state = {
+      title: "",
+      description: "",
+      points: "",
+      subtitle: "",
+      question: "",
+      correctOption: "",
+      options: [],
+      preview: false,
+      newOption: "",
+      previewAnswer: ""
+    };
+    this.updateQuestion = this.updateQuestion.bind(this);
+    this.addOption = this.addOption.bind(this);
+    this.deleteOption = this.deleteOption.bind(this);
+    this.mcqService = MultipleChoiceServiceClient.instance;
   }
 
-  componentDidMount(){
-    let question=this.props.navigation.getParam('question',1);
-    this.setState({question:question})
+  componentDidMount() {
+    let question = this.props.navigation.getParam('question', 1);
+    this.setState({question: question});
     this.setState({
-      title:question.title,
-      description:question.description,
-      points:question.points,
-      subtitle:question.subtitle,
-      correctOption:question.correctOption,
-    })
-    let opt=question.options.split('#')
-    this.setState({options:opt})
+      title: question.title,
+      description: question.description,
+      points: question.points.toString(),
+      subtitle: question.subtitle,
+      correctOption: question.correctOption,
+    });
+    let options = question.options.split('|');
+    this.setState({options: options})
   }
 
-  componentWillReceiveProps(newProps){
-    let opt=newProps.getParam('question',1).options.split('#')
-    this.setState({options:opt})
+  componentWillReceiveProps(newProps) {
+    let options = newProps.getParam('question', 1).options.split('|');
+    this.setState({options: options})
   }
 
-  formUpdate(newState){
+  updateForm(newState) {
     this.setState(newState);
   }
 
-  deleteOption(title){
-    var str=[]
-    let count=0;
-    for(var i=0;i<this.state.options.length;i++)
-      if(this.state.options[i]!=title)
-        str[count++]=this.state.options[i];
-    this.setState({options:str})
+  deleteOption(title) {
+    let str = [];
+    let count = 0;
+    for (let i = 0; i < this.state.options.length; i++)
+      if (this.state.options[i] !== title)
+        str[count++] = this.state.options[i];
+    this.setState({options: str})
+    console.warn(this.state.options)
+    console.warn(this.state.correctOption)
   }
 
-  updateQuestion(){
-
-    var str=''
-    for(var i=0;i<this.state.options.length;i++)
-      str=str+"#"+this.state.options[i];
-
-    let question={
-      title:this.state.title,
-      description:this.state.description,
-      points:this.state.points,
-      subtitle:this.state.subtitle,
-      correctOption:this.state.correctOption+1,
-      options:str,
-      questionType:'MC'
+  updateQuestion() {
+    let str = '';
+    for (let i = 0; i < this.state.options.length; i++) {
+      str = str + "|" + this.state.options[i];
     }
 
-    this.mcqService.updateQuestion(this.state.question.id,question)
-      .then(Alert.alert("MCQ updated successfully"))
-      .then(()=>this.props.navigation.state.params.onNavigateBack())
-      .then(()=>this.props.navigation.goBack())
+    let question = {
+      title: this.state.title,
+      description: this.state.description,
+      points: this.state.points,
+      subtitle: this.state.subtitle,
+      correctOption: this.state.correctOption + 1,
+      options: str,
+      questionType: 'MCQ'
+    };
+
+    this.mcqService.updateQuestion(this.state.question.id, question)
+      .then(() => this.props.navigation.state.params.onNavigateBack())
+      .then(() => this.props.navigation.goBack())
   }
 
-  addOption(){
-
-    let optn=this.state.options;
-    optn[optn.length]=this.state.newOption
-    this.setState({options:optn})
-
+  addOption() {
+    let options = this.state.options;
+    options[options.length] = this.state.newOption;
+    this.setState({options: options})
   }
 
-  render(){
-    let no;
-    return(
+  render() {
+    return (
       <ScrollView>
-        {this.state.previewMode &&<ScrollView>
+        {!this.state.preview &&
+        <ScrollView>
 
-          <View style={{padding: 15, marginBottom: 0}}>
-            <View style={{flex: 1, backgroundColor: 'grey', padding: 11, marginBottom: 2}}>
-              <TextInput editable={false} style={{color: "#fff"}}>Title</TextInput>
-              <View style={{flex: 1, flexDirection: 'row'}}>
-                <View style={{flex: 6}}>
-                  <TextInput style={{
-                    height: 40,
-                    borderColor: 'black',
-                    borderWidth: 1,
-                    backgroundColor: 'white'
-                  }} onChangeText={(text) => {
-                    this.formUpdate({title: text})
-                  }} value={this.state.question.title}/>
-                </View>
-                {this.state.title === "" &&
-                <FormValidationMessage>Title is required</FormValidationMessage>}
-              </View>
+          <FormLabel>Title</FormLabel>
+          <FormInput onChangeText={
+            text => {
+              this.updateForm({title: text})
+            }
+          } value={this.state.title}/>
+
+          {this.state.title === "" &&
+          <FormValidationMessage>Title is required</FormValidationMessage>}
+
+          <FormLabel>Subtitle</FormLabel>
+          <FormInput onChangeText={
+            text => {
+              this.updateForm({subtitle: text})
+            }
+          } value={this.state.subtitle}/>
+          {this.state.subtitle === "" &&
+          <FormValidationMessage>Subtitle is required</FormValidationMessage>}
+
+          <FormLabel>Description</FormLabel>
+          <FormInput onChangeText={
+            text => {
+              this.updateForm({description: text})
+            }
+          } value={this.state.description}/>
+          {this.state.description === "" &&
+          <FormValidationMessage>Description is required</FormValidationMessage>}
+
+          <FormLabel>Points</FormLabel>
+          <FormInput type='numeric'
+                     keyboardType='numeric'
+                     onChangeText={
+                       text => (this.updateForm({points: text}))
+                     } value={this.state.points}/>
+          {this.state.points === "" &&
+          <FormValidationMessage>Points is required</FormValidationMessage>}
+
+          <FormLabel>Options</FormLabel>
+          {this.state.options.map((str, index) => (
+            <View style={{flexDirection: 'row'}} key={index}>
+              {str !== '' && <CheckBox title={str} key={index}
+                                       onPress={() => this.updateForm({correctOption: index})}
+                                       checked={this.state.correctOption == index}/>}
+              {str !== '' && <Icon name={'delete'} onPress={() => this.deleteOption(str)}/>}
             </View>
+          ))}
+
+          <FormLabel>New Option</FormLabel>
+          <FormInput onChangeText={
+            text => {
+              this.updateForm({newOption: text})
+            }
+          }/>
+          <View style={{paddingBottom: 15, paddingTop: 15}}>
+            <Button backgroundColor="blue"
+                    color="white"
+                    title="Add Option"
+                    onPress={() => (this.addOption())}/>
           </View>
 
-          <View style={{padding: 15, marginBottom: 0}}>
-            <View style={{flex: 1, backgroundColor: 'grey', padding: 11, marginBottom: 2}}>
-              <TextInput editable={false} style={{color: "#fff"}}>Subtitle</TextInput>
-              <View style={{flex: 1, flexDirection: 'row'}}>
-                <View style={{flex: 6}}>
-                  <TextInput style={{
-                    height: 40,
-                    borderColor: 'black',
-                    borderWidth: 1,
-                    backgroundColor: 'white'
-                  }} onChangeText={(text) => {
-                    this.formUpdate({subtitle: text})
-                  }} value={this.state.question.subtitle}/>
-                </View>
-                {this.state.subtitle === "" &&
-                <FormValidationMessage>Subtitle is required</FormValidationMessage>}
-              </View>
-            </View>
+          {this.state.description === "" &&
+          <FormValidationMessage>Description is required</FormValidationMessage>}
+
+          <View style={{paddingBottom: 15, paddingTop: 15}}>
+            <Button backgroundColor="green"
+                    color="white"
+                    title="Submit Multiple Choice Question"
+                    onPress={() => (this.updateQuestion())}/>
           </View>
 
-          <View style={{padding: 15, marginBottom: 0}}>
-            <View style={{flex: 1, backgroundColor: 'grey', padding: 11, marginBottom: 2}}>
-              <TextInput editable={false} style={{color: "#fff"}}>Description</TextInput>
-              <View style={{flex: 1, flexDirection: 'row'}}>
-                <View style={{flex: 6}}>
-                  <TextInput style={{
-                    height: 40,
-                    borderColor: 'black',
-                    borderWidth: 1,
-                    backgroundColor: 'white'
-                  }} onChangeText={(text) => {
-                    this.formUpdate({description: text})
-                  }} value={this.state.question.description}/>
-                </View>
-                {this.state.description === "" &&
-                <FormValidationMessage>Description is required</FormValidationMessage>}
-              </View>
-            </View>
+          <Button backgroundColor="red"
+                  color="white"
+                  title="Cancel"
+                  onPress={() => this.props.navigation.goBack()}/>
+
+          <View style={{paddingBottom: 15, paddingTop: 15}}>
+            <Button backgroundColor="black"
+                    color="white"
+                    title="Show Just Preview"
+                    onPress={() => (this.updateForm({preview: true}))}/>
           </View>
 
-          {no = this.state.question.points}
-          { no=''+no}
-
-          <View style={{padding: 15, marginBottom: 0}}>
-            <View style={{flex: 1, backgroundColor: 'grey', padding: 11, marginBottom: 2}}>
-              <TextInput editable={false} style={{color: "#fff"}}>Points</TextInput>
-              <View style={{flex: 1, flexDirection: 'row'}}>
-                <View style={{flex: 6}}>
-                  <TextInput style={{
-                    height: 40,
-                    borderColor: 'black',
-                    borderWidth: 1,
-                    backgroundColor: 'white'
-                  }} onChangeText={(text) => {
-                    this.formUpdate({points: text})
-                  }} value={no}/>
-                </View>
-                {this.state.points === "" &&
-                <FormValidationMessage>Points are required</FormValidationMessage>}
-              </View>
-            </View>
-          </View>
-
-          <View style={{padding: 15, marginBottom: 0}}>
-            <View style={{flex: 1, backgroundColor: 'grey', padding: 11, marginBottom: 2}}>
-              <TextInput editable={false} style={{color: "#fff"}}>Options</TextInput>
-              {this.state.options.map((str,index)=>(
-                <View style={{ flexDirection: 'row'}} key={index}>
-                  {str!=='' &&<CheckBox title={str} key={index}
-                                        onPress={() => this.formUpdate({correctOption: index})}
-                                        checked={this.state.correctOption==(index)}/>}
-                  {str!=='' &&<Icon name={'delete'} onPress={()=>this.deleteOption(str)}/>}
-                </View>
-              ))}
-            </View>
-          </View>
-
-          <View style={{padding: 15,flex:1, marginBottom: 0}}>
-            <View style={{flex: 1, backgroundColor: 'grey', padding: 11, marginBottom: 2}}>
-              <TextInput editable={false} style={{color: "#fff"}}>Options</TextInput>
-              <View style={{flex:1,flexDirection:'row'}}>
-                <View style={{flex:5}}>
-                  <TextInput onChangeText={text=>(
-                    this.formUpdate({newOption:text})
-                  )} style={{height: 40, borderColor: 'black', borderWidth: 1,backgroundColor:'white'}} />
-                </View>
-                <View style={{flex:1,marginTop:5}}>
-                  <Icon
-                    color='black'
-                    name='circle-with-plus'
-                    type='entypo'
-                    onPress={()=>this.addOption()}
-                    size={30}
-                  />
-                </View>
-              </View>
-            </View>
-          </View>
-
-          <View style={{flex: 1, flexDirection: 'row'}}>
-            <View style={{flex: 2}}>
-              <Icon name={'save'} size={40} color="green"
-                    onPress={() => this.updateQuestion()}
-                    type='entypo'/>
-            </View>
-            <View style={{flex: 2}}>
-              <Icon name={'cancel'} size={40} color="red"
-                    onPress={() => this.props.navigation.goBack()}
-                    type='materialicon'/>
-            </View>
-            <View style={{flex: 2}}>
-              <Icon name={'slideshow'} size={40} color="blue"
-                    onPress={() => {
-                      this.setState({previewMode: !this.state.previewMode})
-                    }}
-                    type='materialicon'/>
-            </View>
-
-          </View>
-          <Text>{'\n'}</Text>
         </ScrollView>}
 
-        {!this.state.previewMode && <ScrollView style={{padding:5}}>
-          <View style={{flex: 1, flexDirection: 'row',backgroundColor:'grey',padding:10,marginBottom:5}}>
-            <View style={{flex: 4}}>
-              <Text h4 style={{color:"#fff"}}>{this.state.title}</Text>
-            </View>
-            <View style={{flex: 2}}>
-              <Text h4 style={{color:"#fff"}}>Points - {this.state.points}</Text>
-            </View>
-          </View>
-          <View style={{backgroundColor:'grey',padding:10,marginBottom:5}}>
-            <Text h4 style={{color:"#fff"}}>Description:</Text>
-            <Text style={{color:"#fff"}}>{this.state.description}</Text>
-          </View>
+        {this.state.preview &&
+        <View style={{paddingBottom: 15, paddingTop: 15}}>
+          <Button backgroundColor="black"
+                  color="white"
+                  title="Show Form"
+                  onPress={() => (this.updateForm({preview: false}))}/>
+        </View>}
 
-          <View style={{padding: 15, marginBottom: 0}}>
-            <View style={{flex: 1, backgroundColor: 'grey', padding: 11, marginBottom: 2}}>
-              <TextInput editable={false} style={{color: "#fff"}}>Options</TextInput>
-              <View style={{flex: 1}}>
-                {this.state.options.map((str,index)=>(
-                  <View key={index}>
-                    {str!=='' &&<CheckBox title={str} key={index}
-                                          onPress={()=>{this.setState({demo:index})}}
-                                          checked={this.state.demo==(index)}/>}
-                  </View>
-                ))}
+        {!this.state.preview &&
+        <Text h2>Preview</Text>}
+
+        <View style={{flexDirection: 'row'}}>
+          <View style={{flex: 4}}>
+            <Text h3>{this.state.title}</Text>
+          </View>
+          <View style={{flex: 2}}>
+            <Text h3 style={{alignSelf: 'flex-end'}}>{this.state.points}pts</Text>
+          </View>
+        </View>
+
+        <View style={{paddingTop: 15}}>
+          <Text h4>{this.state.subtitle}</Text>
+        </View>
+
+        <View style={{paddingTop: 15}}>
+          <Text>{this.state.description}</Text>
+        </View>
+
+
+        <View style={{paddingTop: 15}}>
+          <Text>Options</Text>
+          <View>
+            {this.state.options.map((str, index) => (
+              <View key={index}>
+                {str !== '' &&
+                <CheckBox title={str} key={index}
+                          onPress={() => {
+                            this.setState({previewAnswer: index})
+                          }}
+                          checked={this.state.previewAnswer == (index)}
+                />}
               </View>
-            </View>
+            ))}
           </View>
+        </View>
 
-
-          <View style={{flex: 1, flexDirection: 'row'}}>
-            <View style={{flex: 2}}>
-              <Icon name={'check'} size={40} color="green"
-                    type='entypo'/>
-            </View>
-            <View style={{flex: 2}}>
-              <Icon name={'cancel'} size={40} color="red"
-                    type='materialicon'/>
-            </View>
-            <View style={{flex: 2}}>
-              <Icon name={'back'} size={40} color="blue"
-                    onPress={() => {
-                      this.setState({previewMode: !this.state.previewMode})}}
-                    type='entypo'/>
-            </View>
-          </View>
-        </ScrollView>}
+        <View style={{paddingBottom: 30, paddingTop: 15}}>
+          <Button backgroundColor="blue"
+                  color="white"
+                  title="Submit Multiple Choice Answer"/>
+        </View>
 
       </ScrollView>
     )
@@ -300,4 +241,4 @@ class MultipleChoiceWidget extends React.Component{
 }
 
 
-export default MultipleChoiceWidget;
+export default MultipleChoiceEditor;
